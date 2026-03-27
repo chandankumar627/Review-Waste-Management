@@ -1,0 +1,14 @@
+.waste-chart {
+  width: 100%;
+}
+
+.waste-chart h2 {
+  margin-bottom: 1.5rem;
+}
+
+.no-data {
+  text-align: center;
+  color: #9ca3af;
+  padding: 3rem 1rem;
+  font-size: 0.95rem;
+}
