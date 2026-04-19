@@ -4,12 +4,14 @@
   "description": "Frontend for ReVive Waste Monitoring System",
   "private": true,
   "dependencies": {
+    "@react-google-maps/api": "^2.20.8",
+    "axios": "^1.5.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.15.0",
-    "axios": "^1.5.0",
-    "recharts": "^2.8.0",
-    "react-scripts": "5.0.1"
+    "react-scripts": "5.0.1",
+    "react-toastify": "^11.0.5",
+    "recharts": "^2.8.0"
   },
   "scripts": {
     "start": "react-scripts start",

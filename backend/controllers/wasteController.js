@@ -31,13 +31,17 @@ exports.uploadWaste = async (req, res) => {
 
     console.log('AI service response:', aiResponse.data);
 
-    const { category, confidence } = aiResponse.data;
+    const { category, confidence, disposalSuggestion, wasteFingerprint, environmentalImpact } = aiResponse.data;
 
     // Save to database
     const wasteLog = new WasteLog({
+      user: req.user ? req.user._id : undefined,
       imageUrl,
       category,
-      confidence
+      confidence,
+      disposalSuggestion,
+      wasteFingerprint,
+      environmentalImpact
     });
 
     await wasteLog.save();
@@ -71,28 +75,40 @@ exports.getStats = async (req, res) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
+    const query = {};
+    if (req.user && req.user.role !== 'admin') {
+      query.user = req.user._id;
+    }
+
     // Total predictions today
     const todayCount = await WasteLog.countDocuments({
+      ...query,
       createdAt: { $gte: today }
     });
 
     // Category breakdown
-    const categoryStats = await WasteLog.aggregate([
-      {
-        $group: {
-          _id: '$category',
-          count: { $sum: 1 }
+    const matchQuery = req.user && req.user.role !== 'admin' ? { $match: { user: req.user._id } } : { $match: {} };
+    
+    // Check if any docs with query exist
+    let categoryStats = [];
+    if (await WasteLog.countDocuments(query) > 0) {
+      categoryStats = await WasteLog.aggregate([
+        matchQuery,
+        {
+          $group: {
+            _id: '$category',
+            count: { $sum: 1 }
+          }
         }
-      }
-    ]);
+      ]);
+    }
 
     // Latest prediction
-    const latestPrediction = await WasteLog.findOne()
-      .sort({ createdAt: -1 })
-      .limit(1);
+    const latestPrediction = await WasteLog.findOne(query)
+      .sort({ createdAt: -1 });
 
     // Total all-time predictions
-    const totalPredictions = await WasteLog.countDocuments();
+    const totalPredictions = await WasteLog.countDocuments(query);
 
     res.json({
       success: true,
@@ -118,12 +134,17 @@ exports.getHistory = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const skip = (page - 1) * limit;
 
-    const history = await WasteLog.find()
+    const query = {};
+    if (req.user && req.user.role !== 'admin') {
+      query.user = req.user._id;
+    }
+
+    const history = await WasteLog.find(query)
       .sort({ createdAt: -1 })
       .limit(limit)
       .skip(skip);
 
-    const total = await WasteLog.countDocuments();
+    const total = await WasteLog.countDocuments(query);
 
     res.json({
       success: true,
@@ -138,5 +159,32 @@ exports.getHistory = async (req, res) => {
   } catch (error) {
     console.error('History error:', error.message);
     res.status(500).json({ error: 'Failed to fetch history' });
+  }
+};
+
+// Update Prediction Feedback
+exports.updateFeedback = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { isCorrect, suggestedCategory } = req.body;
+
+    const log = await WasteLog.findById(id);
+
+    if (!log) {
+      return res.status(404).json({ error: 'Waste log not found' });
+    }
+
+    // Make sure user owns it or is admin
+    if (!req.user || (log.user && log.user.toString() !== req.user._id.toString() && req.user.role !== 'admin')) {
+      return res.status(401).json({ error: 'Not authorized' });
+    }
+
+    log.feedback = { isCorrect, suggestedCategory };
+    await log.save();
+
+    res.json({ success: true, data: log });
+  } catch (error) {
+    console.error('Feedback error:', error.message);
+    res.status(500).json({ error: 'Failed to update feedback' });
   }
 };

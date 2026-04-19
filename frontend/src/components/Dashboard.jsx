@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getStats, getHistory } from '../services/api';
 import StatsCard from './StatsCard';
 import WasteChart from './WasteChart';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as LineTooltip, Legend as LineLegend, ResponsiveContainer } from 'recharts';
 import '../styles/Dashboard.css';
 
 const Dashboard = () => {
@@ -40,6 +41,23 @@ const Dashboard = () => {
     return <div className="error">{error}</div>;
   }
 
+  // Calculate environmental impacts from history
+  const totalSavedLandfill = history.reduce((sum, item) => sum + (item.environmentalImpact?.savedLandfillKg || 0), 0);
+  const totalCo2Reduced = history.reduce((sum, item) => sum + (item.environmentalImpact?.co2ReducedKg || 0), 0);
+  const totalTiles = history.reduce((sum, item) => sum + (item.environmentalImpact?.interlockingTiles || 0), 0);
+
+  // Generate mock daily trends from history data for the line chart
+  const trendsData = history.reduce((acc, item) => {
+    const date = new Date(item.createdAt).toLocaleDateString();
+    const existing = acc.find(d => d.date === date);
+    if(existing) {
+      existing.uploads += 1;
+    } else {
+      acc.push({ date, uploads: 1 });
+    }
+    return acc;
+  }, []).reverse();
+
   return (
     <div className="dashboard">
       <div className="dashboard-header">
@@ -50,7 +68,7 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="stats-grid">
+      <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
         <StatsCard
           title="Today's Predictions"
           value={stats?.todayCount || 0}
@@ -64,15 +82,21 @@ const Dashboard = () => {
           color="#10b981"
         />
         <StatsCard
-          title="Latest Category"
-          value={stats?.latestPrediction?.category || 'N/A'}
-          icon="🗑️"
+          title="Potential Tiles"
+          value={`${totalTiles} tiles`}
+          icon="🧱"
+          color="#f43f5e"
+        />
+        <StatsCard
+          title="Saved Landfill"
+          value={`${totalSavedLandfill.toFixed(1)} kg`}
+          icon="🌱"
           color="#f59e0b"
         />
         <StatsCard
-          title="Latest Confidence"
-          value={stats?.latestPrediction ? `${(stats.latestPrediction.confidence * 100).toFixed(0)}%` : 'N/A'}
-          icon="✓"
+          title="CO₂ Reduced"
+          value={`${totalCo2Reduced.toFixed(1)} kg`}
+          icon="🌍"
           color="#8b5cf6"
         />
       </div>
@@ -80,6 +104,20 @@ const Dashboard = () => {
       <div className="dashboard-content">
         <div className="chart-section">
           <WasteChart data={stats?.categoryStats || []} />
+          
+          <div className="trends-chart" style={{marginTop: '30px', background: 'white', padding: '20px', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)'}}>
+            <h2 style={{marginBottom: '20px'}}>Daily Trends</h2>
+            <ResponsiveContainer width="100%" height={250}>
+              <LineChart data={trendsData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" />
+                <YAxis />
+                <LineTooltip />
+                <LineLegend />
+                <Line type="monotone" dataKey="uploads" stroke="#3b82f6" activeDot={{ r: 8 }} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
         </div>
 
         <div className="history-section">
@@ -102,6 +140,11 @@ const Dashboard = () => {
                     <p className="timestamp">
                       {new Date(item.createdAt).toLocaleString()}
                     </p>
+                    {item.feedback && (
+                      <p className="feedback-badge" style={{fontSize:'0.8em', marginTop:'5px', color: item.feedback.isCorrect ? 'green': 'red'}}>
+                        {item.feedback.isCorrect ? 'Correct ✓' : 'Flagged ❌'}
+                      </p>
+                    )}
                   </div>
                 </div>
               ))

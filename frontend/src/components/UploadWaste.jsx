@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { uploadWaste } from '../services/api';
+import { uploadWaste, submitFeedback } from '../services/api';
+import { toast } from 'react-toastify';
 import '../styles/UploadWaste.css';
 
 const UploadWaste = () => {
@@ -8,6 +9,7 @@ const UploadWaste = () => {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [feedbackGiven, setFeedbackGiven] = useState(false);
 
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
@@ -16,6 +18,7 @@ const UploadWaste = () => {
       setPreview(URL.createObjectURL(file));
       setResult(null);
       setError(null);
+      setFeedbackGiven(false);
     }
   };
 
@@ -32,6 +35,13 @@ const UploadWaste = () => {
       const response = await uploadWaste(selectedFile);
       setResult(response.data);
       setLoading(false);
+      
+      // Notification
+      if (response.data.category === 'Organic') {
+        toast.success('Organic waste detected → compost recommended');
+      } else {
+        toast.info(`${response.data.category} detected → ${response.data.disposalSuggestion?.action}`);
+      }
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to upload image');
       setLoading(false);
@@ -43,6 +53,18 @@ const UploadWaste = () => {
     setPreview(null);
     setResult(null);
     setError(null);
+    setFeedbackGiven(false);
+  };
+
+  const handleFeedback = async (isCorrect) => {
+    if (!result) return;
+    try {
+      await submitFeedback(result._id, { isCorrect, suggestedCategory: '' });
+      setFeedbackGiven(true);
+      toast.success('Thank you for your feedback!');
+    } catch(err) {
+      toast.error('Failed to submit feedback');
+    }
   };
 
   return (
@@ -115,11 +137,53 @@ const UploadWaste = () => {
                   {(result.confidence * 100).toFixed(1)}%
                 </p>
               </div>
+
+              {result.disposalSuggestion && (
+                <div className="suggestion-box">
+                  <h4>💡 Smart Disposal Suggestion</h4>
+                  <p><strong>Action:</strong> {result.disposalSuggestion.action}</p>
+                  <p>{result.disposalSuggestion.explanation}</p>
+                </div>
+              )}
+
+              {result.wasteFingerprint && (
+                <div className="advanced-fingerprint">
+                  <h4>🧾 Waste Fingerprint</h4>
+                  <ul>
+                    <li><strong>Condition:</strong> {result.wasteFingerprint.condition}</li>
+                    <li><strong>Recyclable:</strong> {result.wasteFingerprint.recyclable ? 'Yes' : 'No'}</li>
+                    <li><strong>Decomposition Time:</strong> {result.wasteFingerprint.decompositionTime}</li>
+                  </ul>
+                </div>
+              )}
+
+              {result.environmentalImpact && (
+                <div className="environmental-impact">
+                  <h4>🌱 Environmental Impact</h4>
+                  <p>You saved <strong>{result.environmentalImpact.savedLandfillKg} kg</strong> of landfill volume</p>
+                  <p><strong>{result.environmentalImpact.co2ReducedKg} kg</strong> of CO₂ emissions reduced</p>
+                  {result.environmentalImpact.interlockingTiles > 0 && (
+                    <p style={{marginTop: '10px', color: '#10b981', fontWeight: 'bold'}}>
+                      🧱 Potential to manufacture <strong>{result.environmentalImpact.interlockingTiles} interlocking tiles</strong> from this plastic waste!
+                    </p>
+                  )}
+                </div>
+              )}
+
               <p className="result-timestamp">
                 Analyzed at: {new Date(result.createdAt).toLocaleString()}
               </p>
             </div>
-            <button onClick={handleReset} className="btn-new">
+            
+            {!feedbackGiven && (
+              <div className="feedback-section" style={{marginTop: '15px', textAlign: 'center'}}>
+                <p>Is this prediction correct?</p>
+                <button onClick={() => handleFeedback(true)} style={{margin: '5px', padding: '5px 15px', cursor: 'pointer'}}>👍 Yes</button>
+                <button onClick={() => handleFeedback(false)} style={{margin: '5px', padding: '5px 15px', cursor: 'pointer'}}>👎 No (Wrong prediction?)</button>
+              </div>
+            )}
+            
+            <button onClick={handleReset} className="btn-new" style={{marginTop: '20px'}}>
               Analyze Another Image
             </button>
           </div>

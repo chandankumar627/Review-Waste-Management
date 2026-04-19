@@ -22,12 +22,26 @@ def predict():
         # Decode base64 image
         image_data = data['image']
         
-        # Call AI model (mock implementation)
-        category, confidence = predict_waste_category(image_data)
+        # Call AI model
+        category, confidence, meta = predict_waste_category(image_data)
         
         return jsonify({
             'category': category,
-            'confidence': round(confidence, 2)
+            'confidence': round(confidence, 2),
+            'disposalSuggestion': {
+                'action': meta['action'],
+                'explanation': meta['explanation']
+            },
+            'wasteFingerprint': {
+                'condition': meta['condition'],
+                'recyclable': meta['recyclable'],
+                'decompositionTime': meta['decompositionTime']
+            },
+            'environmentalImpact': {
+                'savedLandfillKg': meta['savedLandfillKg'],
+                'co2ReducedKg': meta['co2ReducedKg'],
+                'interlockingTiles': meta['interlockingTiles']
+            }
         }), 200
         
     except Exception as e:

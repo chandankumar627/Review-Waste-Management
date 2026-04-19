@@ -30,7 +30,42 @@ def predict_waste_category(image_base64):
     category = random.choice(WASTE_CATEGORIES)
     confidence = random.uniform(0.75, 0.98)
     
-    return category, confidence
+    # Generate Advanced Outputs
+    heuristics = {
+        'Organic': {
+            'action': 'Compost',
+            'explanation': 'Organic waste can be decomposed to enrich soil.',
+            'condition': 'Wet',
+            'recyclable': False,
+            'decompositionTime': '2 to 6 weeks',
+            'savedLandfillKg': round(random.uniform(0.2, 1.5), 2),
+            'co2ReducedKg': round(random.uniform(0.1, 0.8), 2),
+            'interlockingTiles': 0
+        },
+        'Plastic': {
+            'action': 'Recycle',
+            'explanation': 'Plastics must be washed and separated for recycling.',
+            'condition': 'Dry',
+            'recyclable': True,
+            'decompositionTime': '20 to 500 years',
+            'savedLandfillKg': round(random.uniform(0.1, 0.5), 2),
+            'co2ReducedKg': round(random.uniform(0.5, 2.0), 2),
+            'interlockingTiles': random.randint(1, 6) # Estimate: 1-6 paving tiles can be made
+        },
+        'Metal': {
+            'action': 'Recycle',
+            'explanation': 'Metals are highly valuable and infinitely recyclable.',
+            'condition': 'Dry',
+            'recyclable': True,
+            'decompositionTime': '50 to 200 years',
+            'savedLandfillKg': round(random.uniform(0.1, 1.0), 2),
+            'co2ReducedKg': round(random.uniform(1.0, 5.0), 2),
+            'interlockingTiles': 0
+        }
+    }
+    
+    meta = heuristics[category]
+    return category, confidence, meta
 
 
 # Example of how a real implementation would look:
