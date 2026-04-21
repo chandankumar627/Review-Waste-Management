@@ -1,5 +1,5 @@
 .dashboard {
-  padding: 2rem 0;
+  padding: 1.5rem 0;
 }
 
 .dashboard-header {
@@ -11,7 +11,9 @@
 
 .dashboard-header h1 {
   font-size: 2rem;
-  color: #111827;
+  color: var(--color-text-main);
+  font-weight: 700;
+  letter-spacing: -0.5px;
 }
 
 .ai-status {
@@ -19,18 +21,22 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  border-radius: 8px;
-  font-weight: 500;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  font-size: 0.9rem;
+  box-shadow: var(--shadow-sm);
 }
 
 .ai-status.active {
-  background: #d1fae5;
-  color: #065f46;
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  border: 1px solid rgba(16, 185, 129, 0.2);
 }
 
 .ai-status.inactive {
   background: #fee2e2;
-  color: #991b1b;
+  color: var(--color-danger);
+  border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
 .status-dot {
@@ -48,9 +54,9 @@
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1.5rem;
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
 }
 
 .dashboard-content {
@@ -60,64 +66,84 @@
 }
 
 .chart-section,
-.history-section {
-  background: white;
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+.history-section,
+.trends-chart {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-border);
 }
 
 .history-section h2,
-.chart-section h2 {
-  font-size: 1.25rem;
-  margin-bottom: 1rem;
-  color: #111827;
+.chart-section h2,
+.trends-chart h2 {
+  font-size: 1.3rem;
+  margin-bottom: 1.25rem;
+  color: var(--color-text-main);
+  font-weight: 600;
+  letter-spacing: -0.3px;
+}
+
+.trends-chart {
+  margin-top: 2rem;
 }
 
 .history-list {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  max-height: 400px;
+  gap: 1.25rem;
+  max-height: 500px;
   overflow-y: auto;
+  padding-right: 0.5rem;
 }
 
 .history-item {
   display: flex;
-  gap: 1rem;
-  padding: 1rem;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  transition: background 0.2s;
+  gap: 1.25rem;
+  padding: 1.25rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+  background: var(--color-bg-main);
 }
 
 .history-item:hover {
-  background: #f9fafb;
+  background: var(--color-bg-card);
+  box-shadow: var(--shadow-sm);
+  border-color: #cbd5e1;
 }
 
 .history-image img {
-  width: 80px;
-  height: 80px;
+  width: 85px;
+  height: 85px;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
 }
 
 .history-details {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .category-badge {
   display: inline-block;
-  padding: 0.25rem 0.75rem;
-  border-radius: 12px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
+  align-self: flex-start;
+  padding: 0.3rem 0.8rem;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-bottom: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .category-badge.organic {
-  background: #d1fae5;
-  color: #065f46;
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
 }
 
 .category-badge.plastic {
@@ -126,25 +152,42 @@
 }
 
 .category-badge.metal {
-  background: #dbeafe;
-  color: #1e40af;
+  background: #e0e7ff;
+  color: #3730a3;
 }
 
-.confidence {
-  font-size: 0.875rem;
-  color: #6b7280;
-  margin: 0.25rem 0;
+.confidence, .timestamp {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin: 0.2rem 0;
 }
 
-.timestamp {
-  font-size: 0.75rem;
-  color: #9ca3af;
+.feedback-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-top: 0.5rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-full);
+}
+
+.feedback-badge.correct {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary-dark);
+}
+
+.feedback-badge.incorrect {
+  background-color: #fee2e2;
+  color: var(--color-danger);
 }
 
 .no-history {
   text-align: center;
-  color: #9ca3af;
-  padding: 2rem;
+  color: var(--color-text-muted);
+  padding: 3rem;
+  font-weight: 500;
 }
 
 @media (max-width: 1024px) {

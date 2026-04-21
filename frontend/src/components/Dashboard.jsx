@@ -3,6 +3,7 @@ import { getStats, getHistory } from '../services/api';
 import StatsCard from './StatsCard';
 import WasteChart from './WasteChart';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as LineTooltip, Legend as LineLegend, ResponsiveContainer } from 'recharts';
+import { BarChart3, TrendingUp, Cuboid, Leaf, Globe, CheckCircle, XCircle } from 'lucide-react';
 import '../styles/Dashboard.css';
 
 const Dashboard = () => {
@@ -68,36 +69,36 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+      <div className="stats-grid">
         <StatsCard
           title="Today's Predictions"
           value={stats?.todayCount || 0}
-          icon="📊"
-          color="#3b82f6"
+          icon={<BarChart3 size={24} />}
+          color="var(--color-secondary)"
         />
         <StatsCard
           title="Total Predictions"
           value={stats?.totalPredictions || 0}
-          icon="📈"
-          color="#10b981"
+          icon={<TrendingUp size={24} />}
+          color="var(--color-primary)"
         />
         <StatsCard
           title="Potential Tiles"
           value={`${totalTiles} tiles`}
-          icon="🧱"
-          color="#f43f5e"
+          icon={<Cuboid size={24} />}
+          color="var(--color-accent)"
         />
         <StatsCard
           title="Saved Landfill"
           value={`${totalSavedLandfill.toFixed(1)} kg`}
-          icon="🌱"
-          color="#f59e0b"
+          icon={<Leaf size={24} />}
+          color="var(--color-warning)"
         />
         <StatsCard
           title="CO₂ Reduced"
           value={`${totalCo2Reduced.toFixed(1)} kg`}
-          icon="🌍"
-          color="#8b5cf6"
+          icon={<Globe size={24} />}
+          color="var(--color-secondary-dark)"
         />
       </div>
 
@@ -105,16 +106,16 @@ const Dashboard = () => {
         <div className="chart-section">
           <WasteChart data={stats?.categoryStats || []} />
           
-          <div className="trends-chart" style={{marginTop: '30px', background: 'white', padding: '20px', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)'}}>
-            <h2 style={{marginBottom: '20px'}}>Daily Trends</h2>
+          <div className="trends-chart">
+            <h2>Daily Trends</h2>
             <ResponsiveContainer width="100%" height={250}>
               <LineChart data={trendsData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis />
-                <LineTooltip />
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                <XAxis dataKey="date" stroke="#64748b" />
+                <YAxis stroke="#64748b" />
+                <LineTooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-md)' }} />
                 <LineLegend />
-                <Line type="monotone" dataKey="uploads" stroke="#3b82f6" activeDot={{ r: 8 }} />
+                <Line type="monotone" dataKey="uploads" stroke="var(--color-secondary)" activeDot={{ r: 8 }} strokeWidth={3} />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -141,8 +142,8 @@ const Dashboard = () => {
                       {new Date(item.createdAt).toLocaleString()}
                     </p>
                     {item.feedback && (
-                      <p className="feedback-badge" style={{fontSize:'0.8em', marginTop:'5px', color: item.feedback.isCorrect ? 'green': 'red'}}>
-                        {item.feedback.isCorrect ? 'Correct ✓' : 'Flagged ❌'}
+                      <p className={`feedback-badge ${item.feedback.isCorrect ? 'correct' : 'incorrect'}`}>
+                        {item.feedback.isCorrect ? <><CheckCircle size={14}/> Correct</> : <><XCircle size={14}/> Flagged</>}
                       </p>
                     )}
                   </div>

@@ -1,242 +1,110 @@
-# ReVive Waste Monitoring System
+# ♻️ ReVive Waste Management System
 
-An AI-powered waste monitoring dashboard that classifies waste images into categories (Organic, Plastic, Metal) using a full-stack architecture.
+A full-stack, AI-powered system designed to categorize waste, track environmental impact, and instruct users on proper waste disposal. 
 
-## 🏗️ Architecture
+## ✨ Key Features
 
-```
-┌─────────────┐      ┌─────────────┐      ┌─────────────┐      ┌─────────────┐
-│   React     │─────▶│   Node.js   │─────▶│   Python    │      │   MongoDB   │
-│  Frontend   │      │   Backend   │      │ AI Service  │      │  Database   │
-│             │◀─────│   (Express) │◀─────│   (Flask)   │      │             │
-└─────────────┘      └─────────────┘      └─────────────┘      └─────────────┘
-                            │                                           │
-                            └───────────────────────────────────────────┘
-```
-
-## 🚀 Tech Stack
-
-- **Frontend**: React.js (Hooks, React Router, Recharts)
-- **Backend**: Node.js + Express.js
-- **Database**: MongoDB + Mongoose
-- **AI Service**: Python + Flask
-- **Image Upload**: Multer
-
-## 📋 Prerequisites
-
-- Node.js (v16 or higher)
-- Python (v3.8 or higher)
-- MongoDB (v5.0 or higher)
-
-## 🛠️ Installation & Setup
-
-### 1. Clone the Repository
-
-```bash
-git clone <repository-url>
-cd revive-waste-system
-```
-
-### 2. Setup Backend (Node.js)
-
-```bash
-cd backend
-npm install
-```
-
-Create `.env` file (already provided):
-```
-PORT=5000
-MONGODB_URI=mongodb://localhost:27017/revive_waste
-AI_SERVICE_URL=http://localhost:5001/predict
-```
-
-### 3. Setup AI Service (Python)
-
-```bash
-cd ai-service
-pip install -r requirements.txt
-```
-
-### 4. Setup Frontend (React)
-
-```bash
-cd frontend
-npm install
-```
-
-Create `.env` file (already provided):
-```
-REACT_APP_API_URL=http://localhost:5000/api
-```
-
-### 5. Start MongoDB
-
-Make sure MongoDB is running on your system:
-
-```bash
-# Windows
-net start MongoDB
-
-# macOS/Linux
-sudo systemctl start mongod
-```
-
-## 🎯 Running the Application
-
-⚠️ **IMPORTANT:** You need to run ALL THREE services simultaneously for the app to work!
-
-### Terminal 1: Start Backend
-```bash
-cd backend
-npm start
-```
-✅ Backend runs on: http://localhost:5000
-Wait for: "✅ MongoDB Connected Successfully"
-
-### Terminal 2: Start AI Service ⚠️ DON'T SKIP THIS!
-```bash
-cd ai-service
-python app.py
-```
-✅ AI Service runs on: http://localhost:5001
-Wait for: "🤖 AI Service starting on port 5001..."
-
-**⚠️ If you skip this step, image uploads will fail with "Failed to process waste image" error!**
-
-### Terminal 3: Start Frontend
-```bash
-cd frontend
-npm start
-```
-✅ Frontend runs on: http://localhost:3000
-Browser should open automatically
-
-### Quick Troubleshooting
-
-**Getting upload errors?** Check if AI service is running:
-```bash
-curl http://localhost:5001/health
-```
-
-If it fails, start the AI service (Terminal 2 above).
-
-See `FIX_UPLOAD_ERROR.md` for detailed troubleshooting.
-
-## 📱 Features
-
-### 1. Dashboard Page
-- Real-time statistics cards
-- Waste category distribution chart
-- Recent predictions history
-- AI system status indicator
-
-### 2. Upload Waste Page
-- Image upload interface
-- AI-powered classification
-- Confidence score display
-- Result visualization
-
-## 🔌 API Endpoints
-
-### Backend API (Port 5000)
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/uploadWaste` | Upload waste image for classification |
-| GET | `/api/stats` | Get dashboard statistics |
-| GET | `/api/history` | Get prediction history |
-| GET | `/health` | Health check |
-
-### AI Service API (Port 5001)
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/predict` | Classify waste image |
-| GET | `/health` | Health check |
-
-## 📊 Database Schema
-
-### WasteLog Collection
-
-```javascript
-{
-  imageUrl: String,      // Path to uploaded image
-  category: String,      // Organic, Plastic, Metal, Unknown
-  confidence: Number,    // 0.0 to 1.0
-  createdAt: Date       // Timestamp
-}
-```
-
-## 🧪 Testing the System
-
-1. Open http://localhost:3000
-2. Navigate to "Upload Waste" page
-3. Select an image file (JPG/PNG)
-4. Click "Analyze Waste"
-5. View the AI prediction result
-6. Check the Dashboard for updated statistics
-
-## 📝 Project Structure
-
-```
-revive-waste-system/
-├── backend/
-│   ├── config/db.js
-│   ├── controllers/wasteController.js
-│   ├── models/WasteLog.js
-│   ├── routes/wasteRoutes.js
-│   ├── middleware/upload.js
-│   └── server.js
-├── frontend/
-│   └── src/
-│       ├── components/
-│       │   ├── Dashboard.jsx
-│       │   ├── UploadWaste.jsx
-│       │   ├── Navbar.jsx
-│       │   ├── StatsCard.jsx
-│       │   └── WasteChart.jsx
-│       ├── services/api.js
-│       └── styles/
-└── ai-service/
-    ├── model/waste_classifier.py
-    └── app.py
-```
-
-## 🎓 Educational Notes
-
-This is a university prototype demonstrating:
-- Full-stack development
-- RESTful API design
-- Microservices architecture
-- AI integration
-- Modern React patterns
-- MongoDB database operations
-
-## ⚠️ Important Notes
-
-- The AI service uses **mock predictions** for demonstration
-- For production, replace with a trained ML model (TensorFlow/PyTorch)
-- Images are stored locally in `backend/uploads/`
-- No authentication implemented (add for production)
-
-## 🔮 Future Enhancements
-
-- Train actual CNN model for waste classification
-- Add user authentication
-- Implement real-time notifications
-- Add export functionality for reports
-- Deploy to cloud platform
-- Add mobile app support
-
-## 📄 License
-
-This project is for educational purposes.
-
-## 👥 Contributors
-
-University Prototype Project
+- **🔒 Secure Authentication:** Fully integrated JWT-based Signup and Login system.
+- **🧠 AI Image Processing:** Upload an image of waste and our Python microservice will classify it (Organic, Plastic, Metal, Unknown).
+- **📊 Advanced Environmental Analytics:**
+  - Tracks total **CO₂ emissions reduced**.
+  - Estimates total **kg of landfill space saved**.
+  - Calculates the amount of **interlocking paving tiles** that can be manufactured from recycled plastic.
+- **📈 Global Dashboard:** See real-time system stats, daily upload trends, and recent global history.
+- **⚙️ Admin Panel:** The first user to register automatically becomes an Admin, granting access to a global view of all history logs and user feedback markers.
+- **🗺️ Nearby Recycling Map:** Integrated Google Map component to locate nearby disposal centers.
+- **🔔 Live Notifications:** Integrated `react-toastify` for sleek contextual pop-up alerts.
+- **💡 Smart Suggestion Engine:** Gives step-by-step instructions (Compost vs. Recycle vs. Hazardous).
 
 ---
 
-**ReVive Waste Monitoring System** - Making waste management smarter with AI 🌱♻️
+## 🚀 How to Run the Project
+
+This system is broken up into 3 main components: **Backend**, **Frontend**, and **AI Service**. You will need to run all 3 simultaneously in separate terminal windows.
+
+### Prerequisites
+Make sure you have installed:
+- [Node.js](https://nodejs.org/) (v16+)
+- [Python 3](https://www.python.org/)
+- MongoDB (Running locally or via a cloud instance like MongoDB Atlas)
+
+---
+
+### 1. Run the Node.js Backend
+
+1. Open a terminal and navigate to the backend directory:
+   ```bash
+   cd backend
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Set up your `.env` file inside the `backend` folder:
+   ```env
+   PORT=5000
+   MONGO_URI=mongodb://127.0.0.1:27017/revive_waste
+   JWT_SECRET=super_secret_jwt_key
+   AI_SERVICE_URL=http://127.0.0.1:5001/predict
+   ```
+4. Start the server (runs on port 5000):
+   ```bash
+   npm start
+   ```
+
+---
+
+### 2. Run the AI Python Service
+
+1. Open a new, separate terminal and navigate to the AI service folder:
+   ```bash
+   cd ai-service
+   ```
+2. *(Optional but recommended)* Create and activate a virtual environment:
+   ```bash
+   python -m venv venv
+   # On Windows:
+   venv\Scripts\activate
+   # On Mac/Linux:
+   source venv/bin/activate
+   ```
+3. Install the required Python packages:
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. Start the Flask application (runs on port 5001):
+   ```bash
+   python app.py
+   ```
+
+---
+
+### 3. Run the React Frontend
+
+1. Open a 3rd new terminal and navigate to the frontend directory:
+   ```bash
+   cd frontend
+   ```
+2. Install frontend dependencies:
+   ```bash
+   npm install
+   ```
+3. Set up your `.env` file inside the `frontend` folder:
+   ```env
+   REACT_APP_API_URL=http://localhost:5000/api
+   REACT_APP_GOOGLE_MAPS_API_KEY=YOUR_API_KEY_HERE  # Optional
+   ```
+4. Start the React development server:
+   ```bash
+   npm start
+   ```
+5. Your browser should automatically open `http://localhost:3000`.
+
+---
+
+## 🛠️ Testing the Application
+
+1. **Visit http://localhost:3000**.
+2. **Register an Account:** Click "Sign Up". The *very first account* you create will automatically be granted **Admin privileges**.
+3. **Upload Waste:** Head to the Upload section and submit an image of waste to see the AI engine trigger.
+4. **Dashboard:** Go back to the dashboard to watch your environmental impact graphs update instantly!

@@ -1,10 +1,11 @@
 import React, { useState, useCallback } from 'react';
 import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
+import { MapPin, Recycle } from 'lucide-react';
 
 const containerStyle = {
   width: '100%',
   height: '500px',
-  borderRadius: '12px'
+  borderRadius: 'var(--radius-lg)'
 };
 
 // Default center (San Francisco)
@@ -39,7 +40,7 @@ const MapLocator = () => {
   }, []);
 
   if (loadError) {
-    return <div className="map-error">Error loading Maps. Please provide a valid API key in .env.</div>;
+    return <div className="error">Error loading Maps. Please provide a valid API key in .env.</div>;
   }
 
   if (!isLoaded) {
@@ -49,19 +50,25 @@ const MapLocator = () => {
   // If no API key is provided, show a polite placeholder message.
   if(!process.env.REACT_APP_GOOGLE_MAPS_API_KEY) {
     return (
-      <div style={{padding: '50px', textAlign: 'center', background: 'white', borderRadius: '12px', marginTop: '20px'}}>
-        <h2>📍 Nearby Recycling Centers</h2>
-        <p style={{color: '#6b7280', marginTop: '10px'}}>
+      <div style={{padding: '50px', textAlign: 'center', background: 'var(--color-bg-card)', borderRadius: 'var(--radius-lg)', marginTop: '20px', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-sm)'}}>
+        <h2 style={{display:'flex', alignItems:'center', justifyContent:'center', gap:'10px'}}>
+          <MapPin size={24} color="var(--color-primary)"/> Nearby Recycling Centers
+        </h2>
+        <p style={{color: 'var(--color-text-muted)', marginTop: '15px'}}>
           Google Maps API Key not detected. Please add <code>REACT_APP_GOOGLE_MAPS_API_KEY</code> to your <code>frontend/.env</code> file to enable location features.
         </p>
       </div>
     );
   }
 
+  // Note: Standard Google Maps Marker only supports simple text labels or custom icons via URL. 
+  // We will use standard label options without emojis.
   return (
-    <div className="map-container" style={{padding: '20px'}}>
-      <h2>📍 Nearby Recycling Centers</h2>
-      <div style={{marginTop: '20px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)'}}>
+    <div className="map-container" style={{padding: '0 0 20px 0'}}>
+      <h2 style={{display:'flex', alignItems:'center', gap:'10px', marginBottom: '20px'}}>
+        <MapPin size={28} color="var(--color-primary)"/> Nearby Recycling Centers
+      </h2>
+      <div style={{boxShadow: 'var(--shadow-md)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)', overflow: 'hidden'}}>
         <GoogleMap
           mapContainerStyle={containerStyle}
           center={center}
@@ -70,10 +77,10 @@ const MapLocator = () => {
           onUnmount={onUnmount}
         >
           { /* Child components, such as markers, info windows, etc. */ }
-          <Marker position={center} label="You" />
+          <Marker position={center} label="U" title="You are here" />
           
           {mockLocations.map((loc, idx) => (
-            <Marker key={idx} position={{lat: loc.lat, lng: loc.lng}} label="♻️" title={loc.name} />
+            <Marker key={idx} position={{lat: loc.lat, lng: loc.lng}} label="R" title={loc.name} />
           ))}
           <></>
         </GoogleMap>
